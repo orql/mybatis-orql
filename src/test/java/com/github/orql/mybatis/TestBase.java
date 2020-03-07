@@ -49,11 +49,14 @@ public class TestBase {
         InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         configuration = sqlSessionFactory.getConfiguration();
+
         SqlSession session = sqlSessionFactory.openSession(true);
         Connection connection = session.getConnection();
         connection.prepareStatement(readString("/sql/init-table.sql")).execute();
         connection.prepareStatement(readString("/sql/data.sql")).execute();
         session.close();
+
+        OrqlMybatisFactory orqlMybatisFactory = OrqlMybatisFactory.create(sqlSessionFactory);
     }
 
 }
