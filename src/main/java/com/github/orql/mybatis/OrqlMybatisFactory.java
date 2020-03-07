@@ -183,7 +183,6 @@ public class OrqlMybatisFactory {
                 mapper.addDelete(delete);
             } else if (!orql.query().isEmpty()) {
                 OrqlNode orqlNode = orqlParser.parse(orql.query());
-                //FIXME 后续加上orders
                 List<QueryOrder> queryOrders = null;
                 if (!orql.asc()[0].isEmpty() || !orql.desc()[0].isEmpty()) {
                     queryOrders = new ArrayList<>();
@@ -203,7 +202,8 @@ public class OrqlMybatisFactory {
                         queryOrders.add(queryOrder);
                     }
                 }
-                String sql = orqlToSql.toQuery("query", orqlNode.getRoot(), hasPage(method), queryOrders);
+                String op = method.getReturnType() == List.class ? "queryAll" : "queryOne";
+                String sql = orqlToSql.toQuery(op, orqlNode.getRoot(), hasPage(method), queryOrders);
                 // 根据返回类型获取resultMap
                 Class<?> returnClazz = ReflectUtil.getReturnClazz(method);
                 String resultMapId = COMMON_MAPPER_NAMESPACE + "." + returnClazz.getSimpleName() + "ResultMap";
