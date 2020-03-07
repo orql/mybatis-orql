@@ -44,6 +44,12 @@ public class MybatisResultElement {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class BaseResultMap {
 
+        @XmlAttribute
+        private String columnPrefix;
+
+        @XmlAttribute
+        private String resultMap;
+
         @XmlElement(name = "id")
         private Result primaryKey;
 
@@ -106,6 +112,21 @@ public class MybatisResultElement {
             this.collections = collections;
         }
 
+        public String getColumnPrefix() {
+            return columnPrefix;
+        }
+
+        public void setColumnPrefix(String columnPrefix) {
+            this.columnPrefix = columnPrefix;
+        }
+
+        public String getResultMap() {
+            return resultMap;
+        }
+
+        public void setResultMap(String resultMap) {
+            this.resultMap = resultMap;
+        }
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

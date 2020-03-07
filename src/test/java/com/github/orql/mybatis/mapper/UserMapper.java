@@ -12,4 +12,7 @@ public interface UserMapper {
 
     @Orql(delete = "user(id = $id)")
     void deleteById(Long id);
+
+    @Orql(query = "user(id = $id): {*}")
+    User queryById(Long id);
 }

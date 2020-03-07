@@ -2,10 +2,13 @@ package com.github.orql.mybatis;
 
 import com.github.orql.core.orql.OrqlNode;
 import com.github.orql.core.orql.OrqlParser;
+import com.github.orql.core.schema.AssociationInfo;
 import com.github.orql.core.schema.ColumnInfo;
+import com.github.orql.core.schema.SchemaInfo;
 import com.github.orql.core.schema.SchemaManager;
 import com.github.orql.core.sql.OrqlToSql;
 import com.github.orql.mybatis.annotation.Orql;
+import com.github.orql.mybatis.util.ReflectUtil;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
@@ -18,10 +21,11 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Properties;
-import java.util.Set;
 
 import com.github.orql.mybatis.MybatisSqlElement.*;
+import com.github.orql.mybatis.MybatisResultElement.*;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +36,8 @@ import javax.xml.bind.Marshaller;
 public class OrqlMybatisFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(OrqlMybatisFactory.class);
+
+    private static final String COMMON_MAPPER_NAMESPACE = "com.github.orql.mybatis.mapper.CommonMapper";
 
     private SqlSessionFactory sqlSessionFactory;
 
@@ -82,14 +88,64 @@ public class OrqlMybatisFactory {
                 "#{" + sqlParam.getName() + "}");
         schemaManager = new SchemaManager();
         schemaManager.scanPackage(schemasPath);
+        createAllResultMap();
         orqlParser = new OrqlParser(schemaManager);
         if (mappersPath != null) {
-            Reflections mappersReflections = new Reflections(new ConfigurationBuilder().forPackages(mappersPath));
-            for (Class clazz : mappersReflections.getTypesAnnotatedWith(Mapper.class)) {
+            Reflections mappersReflections = new Reflections(new ConfigurationBuilder().forPackages(mappersPath).addScanners(new SubTypesScanner(false)));
+            for (Class<?> clazz : mappersReflections.getTypesAnnotatedWith(Mapper.class)) {
                 logger.info("scan mapper: {}", clazz.getName());
                 registerMapper(clazz);
             }
         }
+    }
+
+    private void createAllResultMap() {
+        XmlMapper mapper = new XmlMapper();
+        mapper.setNamespace(COMMON_MAPPER_NAMESPACE);
+        for (SchemaInfo schemaInfo : schemaManager.getSchemas().values()) {
+            ResultMap resultMap = new ResultMap();
+            // id使用Simple类名
+            resultMap.setId(getResultMapId(schemaInfo));
+            logger.info("add resultMap: {}", resultMap.getId());
+            resultMap.setType(schemaInfo.getClazz().getName());
+            for (ColumnInfo columnInfo : schemaInfo.getColumns()) {
+                String field = schemaInfo.getTable() + "_" + columnInfo.getField();
+                if (columnInfo.isPrivateKey()) {
+                    resultMap.setPrimaryKey(new Result(field, columnInfo.getName()));
+                } else {
+                    resultMap.addResut(new Result(field, columnInfo.getName()));
+                }
+            }
+            for (AssociationInfo associationInfo : schemaInfo.getAssociations()) {
+                if (associationInfo.getType() == AssociationInfo.Type.HasOne
+                        || associationInfo.getType() == AssociationInfo.Type.BelongsTo) {
+                    Association association = new Association();
+                    association.setProperty(associationInfo.getName());
+                    association.setJavaType(associationInfo.getRef().getClazz().getName());
+                    association.setResultMap(getResultMapId(associationInfo.getRef()));
+                    // columnPrefix table1_
+                    String columnPrefix = schemaInfo.getTable() + "_";
+                    association.setColumnPrefix(columnPrefix);
+                    resultMap.addAssociation(association);
+                } else {
+                    Collection collection = new Collection();
+                    collection.setProperty(associationInfo.getName());
+                    collection.setOfType(associationInfo.getRef().getClazz().getName());
+                    collection.setResultMap(getResultMapId(associationInfo.getRef()));
+                    // columnPrefix table1_
+                    String columnPrefix = schemaInfo.getTable() + "_";
+                    collection.setColumnPrefix(columnPrefix);
+                    resultMap.addCollection(collection);
+                }
+            }
+            mapper.addResultMap(resultMap);
+        }
+        String xml = convertToXml(mapper);
+        addMapperXml(xml, "file://orql-mapper/all-result-map.xml");
+    }
+
+    private String getResultMapId(SchemaInfo schemaInfo) {
+        return schemaInfo.getClazz().getSimpleName() + "ResultMap";
     }
 
     public void registerMapper(Class<?> mapperClazz) {
@@ -126,7 +182,9 @@ public class OrqlMybatisFactory {
                 OrqlNode orqlNode = orqlParser.parse(orql.query());
                 //FIXME 后续加上orders
                 String sql = orqlToSql.toQuery("query", orqlNode.getRoot(), hasPage(method), null);
-                String resultMapId = id + "ResultMap";
+                // 根据返回类型获取resultMap
+                Class<?> returnClazz = ReflectUtil.getReturnClazz(method);
+                String resultMapId = COMMON_MAPPER_NAMESPACE + "." + returnClazz.getSimpleName() + "ResultMap";
                 Select select = new Select(method.getName(), sql);
                 select.setResultMap(resultMapId);
                 mapper.addSelect(select);
