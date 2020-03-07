@@ -169,7 +169,7 @@ public class OrqlMybatisFactory {
                 String keyProperty = columnInfo != null && columnInfo.isGeneratedKey()
                         ? columnInfo.getField()
                         : null;
-                Insert insert = new Insert(id, sql, keyProperty);
+                Insert insert = new Insert(id, sql, keyProperty, keyProperty != null);
                 mapper.addInsert(insert);
             } else if (!orql.update().isEmpty()) {
                 OrqlNode orqlNode = orqlParser.parse(orql.update());

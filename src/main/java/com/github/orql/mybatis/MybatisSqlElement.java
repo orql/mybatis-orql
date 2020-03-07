@@ -136,16 +136,26 @@ public class MybatisSqlElement {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Insert extends BaseNode {
 
-        public Insert(String id, String sql, String keyProperty) {
+        public Insert(String id, String sql, String keyProperty, Boolean useGeneratedKeys) {
             super(id, sql);
             this.keyProperty = keyProperty;
+            this.useGeneratedKeys = useGeneratedKeys;
         }
 
+        /**
+         * 主键field
+         */
         @XmlAttribute
         private String keyProperty;
 
         @XmlAttribute
         private String parameterType;
+
+        /**
+         * 自增
+         */
+        @XmlAttribute
+        private Boolean useGeneratedKeys;
 
         public String getKeyProperty() {
             return keyProperty;
@@ -161,6 +171,14 @@ public class MybatisSqlElement {
 
         public void setParameterType(String parameterType) {
             this.parameterType = parameterType;
+        }
+
+        public Boolean getUseGeneratedKeys() {
+            return useGeneratedKeys;
+        }
+
+        public void setUseGeneratedKeys(Boolean useGeneratedKeys) {
+            this.useGeneratedKeys = useGeneratedKeys;
         }
     }
 

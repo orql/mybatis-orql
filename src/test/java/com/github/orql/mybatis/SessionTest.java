@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -29,8 +30,11 @@ public class SessionTest extends TestBase {
         SqlSession session = sqlSessionFactory.openSession(true);
         UserMapper userMapper = session.getMapper(UserMapper.class);
         User user = new User();
+        user.setCreateTime(new Date());
         user.setName("n11");
         userMapper.add(user);
+        User result = userMapper.queryById(user.getId());
+        assertEquals(user.getName(), result.getName());
     }
 
     @Test
