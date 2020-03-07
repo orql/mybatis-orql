@@ -1,5 +1,6 @@
 package com.github.orql.mybatis.schema;
 
+import com.github.orql.core.annotation.BelongsTo;
 import com.github.orql.core.annotation.Column;
 import com.github.orql.core.annotation.Schema;
 
@@ -17,8 +18,11 @@ public class User {
     @Column
     private String email;
 
-    @Column
+    @Column(field = "create_time")
     private Date createTime;
+
+    @BelongsTo(refKey = "role_id")
+    private Role role;
 
     public Long getId() {
         return id;
@@ -52,6 +56,14 @@ public class User {
         this.createTime = createTime;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -59,6 +71,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", createTime=" + createTime +
+                ", role=" + role +
                 '}';
     }
 }

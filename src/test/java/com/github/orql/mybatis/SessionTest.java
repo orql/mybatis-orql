@@ -1,6 +1,7 @@
 package com.github.orql.mybatis;
 
 import com.github.orql.mybatis.mapper.UserMapper;
+import com.github.orql.mybatis.schema.Role;
 import com.github.orql.mybatis.schema.User;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
@@ -31,10 +32,27 @@ public class SessionTest extends TestBase {
         UserMapper userMapper = session.getMapper(UserMapper.class);
         User user = new User();
         user.setCreateTime(new Date());
-        user.setName("n11");
+        user.setName("小红");
         userMapper.add(user);
         User result = userMapper.queryById(user.getId());
         assertEquals(user.getName(), result.getName());
+    }
+
+    @Test
+    public void testAddUserAndRole() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = new User();
+        user.setName("小绿");
+        user.setCreateTime(new Date());
+        Role role = new Role();
+        role.setId(1);
+        user.setRole(role);
+        userMapper.addUserAndRole(user);
+        User result = userMapper.queryByIdWithRole(user.getId());
+        logger.info("user with role: {}", result);
+        assertEquals(user.getName(), result.getName());
+        assertEquals(user.getRole().getId(), result.getRole().getId());
     }
 
     @Test

@@ -46,7 +46,11 @@ public class ReflectUtil {
     }
 
     public static boolean hasField(Object instance, String fieldName) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
+        return hasField(instance.getClass(), fieldName);
+    }
+
+    public static boolean hasField(Class<?> clazz, String fieldName) {
+        for (Field field : clazz.getDeclaredFields()) {
             if (field.getName().equals(fieldName)) return true;
         }
         return false;

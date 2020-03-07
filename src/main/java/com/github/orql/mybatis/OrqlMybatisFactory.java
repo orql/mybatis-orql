@@ -115,6 +115,11 @@ public class OrqlMybatisFactory {
                 String field = schemaInfo.getTable() + "_" + columnInfo.getField();
                 if (columnInfo.isPrivateKey()) {
                     resultMap.setPrimaryKey(new Result(field, columnInfo.getName()));
+                } else if (columnInfo.isRefKey()) {
+                    if (ReflectUtil.hasField(schemaInfo.getClazz(), columnInfo.getName())) {
+                        // 排除没有的key，避免mybatis报错
+                        resultMap.addResut(new Result(field, columnInfo.getName()));
+                    }
                 } else {
                     resultMap.addResut(new Result(field, columnInfo.getName()));
                 }
@@ -144,6 +149,7 @@ public class OrqlMybatisFactory {
             mapper.addResultMap(resultMap);
         }
         String xml = convertToXml(mapper);
+//        logger.debug("all result map: \n{}", xml);
         addMapperXml(xml, "file://orql-mapper/all-result-map.xml");
     }
 
