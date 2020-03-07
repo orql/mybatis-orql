@@ -1,5 +1,6 @@
 package com.github.orql.mybatis;
 
+import com.github.orql.core.QueryOrder;
 import com.github.orql.core.orql.OrqlNode;
 import com.github.orql.core.orql.OrqlParser;
 import com.github.orql.core.schema.AssociationInfo;
@@ -20,6 +21,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.github.orql.mybatis.MybatisSqlElement.*;
@@ -181,7 +184,26 @@ public class OrqlMybatisFactory {
             } else if (!orql.query().isEmpty()) {
                 OrqlNode orqlNode = orqlParser.parse(orql.query());
                 //FIXME 后续加上orders
-                String sql = orqlToSql.toQuery("query", orqlNode.getRoot(), hasPage(method), null);
+                List<QueryOrder> queryOrders = null;
+                if (!orql.asc()[0].isEmpty() || !orql.desc()[0].isEmpty()) {
+                    queryOrders = new ArrayList<>();
+                    if (!orql.asc()[0].isEmpty()) {
+                        QueryOrder queryOrder = new QueryOrder();
+                        for (String column : orql.asc()) {
+                            queryOrder.addColumn(column);
+                        }
+                        queryOrders.add(queryOrder);
+                    }
+                    if (!orql.desc()[0].isEmpty()) {
+                        QueryOrder queryOrder = new QueryOrder();
+                        queryOrder.setSort("desc");
+                        for (String column : orql.desc()) {
+                            queryOrder.addColumn(column);
+                        }
+                        queryOrders.add(queryOrder);
+                    }
+                }
+                String sql = orqlToSql.toQuery("query", orqlNode.getRoot(), hasPage(method), queryOrders);
                 // 根据返回类型获取resultMap
                 Class<?> returnClazz = ReflectUtil.getReturnClazz(method);
                 String resultMapId = COMMON_MAPPER_NAMESPACE + "." + returnClazz.getSimpleName() + "ResultMap";

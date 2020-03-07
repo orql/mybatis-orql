@@ -1,1 +1,10 @@
-insert into user (id, name) values (1, 'n1');
+insert into user (name, email, createTime) values ('n1', 'e1@e.com', '2020-02-01 00:00:00');
+insert into user (name, email, createTime) values ('n2', 'e2@e.com', '2020-02-02 00:00:00');
+insert into user (name, email, createTime) values ('n3', 'e3@e.com', '2020-02-03 00:00:00');
+insert into user (name, email, createTime) values ('n4', 'e4@e.com', '2020-02-04 00:00:00');
+insert into user (name, email, createTime) values ('n5', 'e5@e.com', '2020-02-05 00:00:00');
+insert into user (name, email, createTime) values ('n6', 'e6@e.com', '2020-02-06 00:00:00');
+insert into user (name, email, createTime) values ('n7', 'e7@e.com', '2020-02-07 00:00:00');
+insert into user (name, email, createTime) values ('n8', 'e8@e.com', '2020-02-08 00:00:00');
+insert into user (name, email, createTime) values ('n9', 'e9@e.com', '2020-02-09 00:00:00');
+insert into user (name, email, createTime) values ('n10', 'e10@e.com', '2020-02-10 00:00:00');

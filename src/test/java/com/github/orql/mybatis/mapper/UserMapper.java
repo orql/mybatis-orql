@@ -4,6 +4,8 @@ import com.github.orql.mybatis.annotation.Orql;
 import com.github.orql.mybatis.schema.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -15,4 +17,10 @@ public interface UserMapper {
 
     @Orql(query = "user(id = $id): {*}")
     User queryById(Long id);
+
+    @Orql(query = "user : {*}")
+    List<User> queryAll();
+
+    @Orql(query = "user : {*}", desc = "id")
+    List<User> queryAllOrderByIdDesc();
 }

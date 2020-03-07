@@ -38,4 +38,20 @@ public @interface Orql {
      */
     String count() default "";
 
+    /**
+     * 升序排序
+     * @Orql(query = "user: {*}", asc = {"name"})
+     * List<User> findAll();
+     * @return
+     */
+    String[] asc() default "";
+
+    /**
+     * 降序排序
+     * @Orql(query = "user: {*}", desc = {"name"})
+     * List<User> findAll();
+     * @return
+     */
+    String[] desc() default "";
+
 }

@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class SessionTest extends TestBase {
@@ -29,6 +31,22 @@ public class SessionTest extends TestBase {
         User user = new User();
         user.setName("n11");
         userMapper.add(user);
+    }
+
+    @Test
+    public void testQueryAll() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        List<User> users = userMapper.queryAll();
+        logger.info("users: {}", users);
+    }
+
+    @Test
+    public void testOrderDesc() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        List<User> users = userMapper.queryAllOrderByIdDesc();
+        logger.info("users: {}", users);
     }
 
 }
