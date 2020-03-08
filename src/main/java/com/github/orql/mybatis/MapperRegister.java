@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MapperRegister {
@@ -211,6 +212,14 @@ public class MapperRegister {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n"
                 + result;
+    }
+
+    public void registerMappers() {
+        Collection<Class<?>> classSet = configuration.getSqlSessionFactory().getConfiguration().getMapperRegistry().getMappers();
+        for (Class<?> mapper : classSet) {
+            logger.info("register mapper: {}", mapper.getName());
+            registerMapper(mapper);
+        }
     }
 
 }

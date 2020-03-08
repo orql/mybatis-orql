@@ -1,5 +1,6 @@
 package com.github.orql.mybatis;
 
+import com.github.orql.mybatis.mapper.RoleMapper;
 import com.github.orql.mybatis.mapper.UserMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
@@ -46,6 +47,8 @@ public class TestBase {
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         configuration = sqlSessionFactory.getConfiguration();
 
+        configuration.getMapperRegistry().addMapper(RoleMapper.class);
+
         SqlSession session = sqlSessionFactory.openSession(true);
         Connection connection = session.getConnection();
         connection.prepareStatement(readString("/sql/init-table.sql")).execute();
@@ -56,8 +59,6 @@ public class TestBase {
                 .sqlSessionFactory(sqlSessionFactory)
                 .schemaPath("com.github.orql.mybatis.schema")
                 .build();
-        orqlMybatisFactory.registerMapper(UserMapper.class);
-
 
 //        org.h2.tools.Server.startWebServer(connection);
     }

@@ -18,6 +18,7 @@ public class OrqlMybatisFactory {
                 "#{" + sqlParam.getName() + "}");
         configuration.getSchemaManager().scanPackage(configuration.getSchemaPath());
         configuration.getMapperRegister().createAllResultMap();
+        configuration.getMapperRegister().registerMappers();
     }
 
     public void registerMapper(Class<?> mapper) {
