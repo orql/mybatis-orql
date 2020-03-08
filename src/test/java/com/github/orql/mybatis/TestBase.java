@@ -1,5 +1,6 @@
 package com.github.orql.mybatis;
 
+import com.github.orql.mybatis.mapper.UserMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -50,7 +51,13 @@ public class TestBase {
         connection.prepareStatement(readString("/sql/init-table.sql")).execute();
         connection.prepareStatement(readString("/sql/data.sql")).execute();
         session.close();
-        OrqlMybatisFactory orqlMybatisFactory = OrqlMybatisFactory.create(sqlSessionFactory);
+
+        OrqlMybatisFactory orqlMybatisFactory = new OrqlMybatisFactoryBuilder()
+                .sqlSessionFactory(sqlSessionFactory)
+                .schemaPath("com.github.orql.mybatis.schema")
+                .build();
+        orqlMybatisFactory.registerMapper(UserMapper.class);
+
 
 //        org.h2.tools.Server.startWebServer(connection);
     }
