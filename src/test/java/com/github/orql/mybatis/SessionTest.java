@@ -80,4 +80,13 @@ public class SessionTest extends TestBase {
         assertEquals("1990-01-01 00:00:00", user.getInfo().getBirthday());
     }
 
+    @Test
+    public void testFromXml() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.selectByIdFromXml(1L);
+        logger.info("user: {}", user);
+        assertEquals("n1", user.getName());
+    }
+
 }
