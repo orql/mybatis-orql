@@ -21,11 +21,14 @@ public class Configuration {
 
     private SqlSessionFactory sqlSessionFactory;
 
+    private MapperRegister mapperRegister;
+
     public Configuration() {
         schemaManager = new SchemaManager();
         orqlToSql = new OrqlToSql();
         orqlParser = new OrqlParser(schemaManager);
         namespace = "com.github.orql.mybatis.mapper.CommonMapper";
+        mapperRegister = new MapperRegister(this);
     }
 
     public void setSchemaPath(String schemaPath) {
@@ -66,5 +69,9 @@ public class Configuration {
 
     public String getSchemaPath() {
         return schemaPath;
+    }
+
+    public MapperRegister getMapperRegister() {
+        return mapperRegister;
     }
 }
