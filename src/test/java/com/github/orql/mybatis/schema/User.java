@@ -1,7 +1,11 @@
 package com.github.orql.mybatis.schema;
 
+import com.github.orql.core.annotation.BelongsTo;
 import com.github.orql.core.annotation.Column;
+import com.github.orql.core.annotation.HasOne;
 import com.github.orql.core.annotation.Schema;
+
+import java.util.Date;
 
 @Schema
 public class User {
@@ -12,11 +16,75 @@ public class User {
     @Column
     private String name;
 
+    @Column
+    private String email;
+
+    @Column(field = "create_time")
+    private Date createTime;
+
+    @BelongsTo(refKey = "role_id")
+    private Role role;
+
+    @HasOne(required = false, refKey = "user_id")
+    private UserInfo info;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public UserInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(UserInfo info) {
+        this.info = info;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", createTime=" + createTime +
+                ", role=" + role +
+                ", info=" + info +
+                '}';
     }
 }
