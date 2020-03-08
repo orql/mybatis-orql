@@ -1,17 +1,12 @@
 package com.github.orql.mybatis;
 
-import com.github.orql.mybatis.mapper.DynamicUserMapper;
-import com.github.orql.mybatis.schema.User;
-import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import static org.junit.Assert.*;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +40,7 @@ public class TestBase {
     }
 
     @Before
-    public void init() throws IOException, URISyntaxException, SQLException {
+    public void init() throws IOException, SQLException {
         InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         configuration = sqlSessionFactory.getConfiguration();
@@ -55,8 +50,9 @@ public class TestBase {
         connection.prepareStatement(readString("/sql/init-table.sql")).execute();
         connection.prepareStatement(readString("/sql/data.sql")).execute();
         session.close();
-
         OrqlMybatisFactory orqlMybatisFactory = OrqlMybatisFactory.create(sqlSessionFactory);
+
+//        org.h2.tools.Server.startWebServer(connection);
     }
 
 }

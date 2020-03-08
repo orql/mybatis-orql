@@ -71,4 +71,13 @@ public class SessionTest extends TestBase {
         logger.info("users: {}", users);
     }
 
+    @Test
+    public void testQueryHasOne() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.queryByIdWithInfo(1L);
+        logger.info("user with info {}", user);
+        assertEquals("1990-01-01 00:00:00", user.getInfo().getBirthday());
+    }
+
 }

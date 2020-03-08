@@ -1,5 +1,6 @@
 package com.github.orql.mybatis;
 
+import com.github.orql.core.QueryOp;
 import com.github.orql.core.QueryOrder;
 import com.github.orql.core.orql.OrqlNode;
 import com.github.orql.core.orql.OrqlParser;
@@ -112,7 +113,7 @@ public class OrqlMybatisFactory {
             logger.info("add resultMap: {}", resultMap.getId());
             resultMap.setType(schemaInfo.getClazz().getName());
             for (ColumnInfo columnInfo : schemaInfo.getColumns()) {
-                String field = schemaInfo.getTable() + "_" + columnInfo.getField();
+                String field = columnInfo.getField();
                 if (columnInfo.isPrivateKey()) {
                     resultMap.setPrimaryKey(new Result(field, columnInfo.getName()));
                 } else if (columnInfo.isRefKey()) {
@@ -132,7 +133,7 @@ public class OrqlMybatisFactory {
                     association.setJavaType(associationInfo.getRef().getClazz().getName());
                     association.setResultMap(getResultMapId(associationInfo.getRef()));
                     // columnPrefix table1_
-                    String columnPrefix = schemaInfo.getTable() + "_";
+                    String columnPrefix = associationInfo.getName() + "_";
                     association.setColumnPrefix(columnPrefix);
                     resultMap.addAssociation(association);
                 } else {
@@ -141,7 +142,7 @@ public class OrqlMybatisFactory {
                     collection.setOfType(associationInfo.getRef().getClazz().getName());
                     collection.setResultMap(getResultMapId(associationInfo.getRef()));
                     // columnPrefix table1_
-                    String columnPrefix = schemaInfo.getTable() + "_";
+                    String columnPrefix = associationInfo.getName() + "_";
                     collection.setColumnPrefix(columnPrefix);
                     resultMap.addCollection(collection);
                 }
@@ -208,7 +209,7 @@ public class OrqlMybatisFactory {
                         queryOrders.add(queryOrder);
                     }
                 }
-                String op = method.getReturnType() == List.class ? "queryAll" : "queryOne";
+                QueryOp op = method.getReturnType() == List.class ? QueryOp.QueryAll : QueryOp.QueryOne;
                 String sql = orqlToSql.toQuery(op, orqlNode.getRoot(), hasPage(method), queryOrders);
                 // 根据返回类型获取resultMap
                 Class<?> returnClazz = ReflectUtil.getReturnClazz(method);
@@ -218,7 +219,7 @@ public class OrqlMybatisFactory {
                 mapper.addSelect(select);
             } else if (!orql.count().isEmpty()) {
                 OrqlNode orqlNode = orqlParser.parse(orql.count());
-                String sql = orqlToSql.toQuery("query", orqlNode.getRoot(), false, null);
+                String sql = orqlToSql.toQuery(QueryOp.Count, orqlNode.getRoot(), false, null);
                 Select countSelect = new Select(id, sql);
                 countSelect.setResultType("java.lang.Integer");
                 mapper.addSelect(countSelect);

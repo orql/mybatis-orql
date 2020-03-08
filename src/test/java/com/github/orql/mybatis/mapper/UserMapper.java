@@ -24,6 +24,9 @@ public interface UserMapper {
     @Orql(query = "user(id = $id): {id, name, role: {*}}")
     User queryByIdWithRole(Long id);
 
+    @Orql(query = "user(id = $id) : {*, info: {*}}")
+    User queryByIdWithInfo(Long id);
+
     @Orql(query = "user : {*}")
     List<User> queryAll();
 

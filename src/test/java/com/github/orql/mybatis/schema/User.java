@@ -2,6 +2,7 @@ package com.github.orql.mybatis.schema;
 
 import com.github.orql.core.annotation.BelongsTo;
 import com.github.orql.core.annotation.Column;
+import com.github.orql.core.annotation.HasOne;
 import com.github.orql.core.annotation.Schema;
 
 import java.util.Date;
@@ -23,6 +24,9 @@ public class User {
 
     @BelongsTo(refKey = "role_id")
     private Role role;
+
+    @HasOne(required = false, refKey = "user_id")
+    private UserInfo info;
 
     public Long getId() {
         return id;
@@ -64,6 +68,14 @@ public class User {
         this.role = role;
     }
 
+    public UserInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(UserInfo info) {
+        this.info = info;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -72,6 +84,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", createTime=" + createTime +
                 ", role=" + role +
+                ", info=" + info +
                 '}';
     }
 }
