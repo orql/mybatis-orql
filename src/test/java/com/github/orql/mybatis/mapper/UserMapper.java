@@ -33,4 +33,6 @@ public interface UserMapper {
     @Orql(query = "user : {*}", desc = "id")
     List<User> queryAllOrderByIdDesc();
 
+    User selectByIdFromXml(Long id);
+
 }

@@ -1,5 +1,6 @@
 package com.github.orql.mybatis;
 
+import com.github.orql.mybatis.mapper.RoleMapper;
 import com.github.orql.mybatis.mapper.UserMapper;
 import com.github.orql.mybatis.schema.Role;
 import com.github.orql.mybatis.schema.User;
@@ -78,6 +79,23 @@ public class SessionTest extends TestBase {
         User user = userMapper.queryByIdWithInfo(1L);
         logger.info("user with info {}", user);
         assertEquals("1990-01-01 00:00:00", user.getInfo().getBirthday());
+    }
+
+    @Test
+    public void testFromXml() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.selectByIdFromXml(1L);
+        logger.info("user: {}", user);
+        assertEquals("n1", user.getName());
+    }
+
+    @Test
+    public void testAddRole() {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        RoleMapper roleMapper = session.getMapper(RoleMapper.class);
+        Role role = roleMapper.queryById(1);;
+        assertEquals("系统管理员", role.getName());
     }
 
 }

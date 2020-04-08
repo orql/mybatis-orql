@@ -3,11 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <properties>
-        <property name="orql.schemas" value="com.github.orql.mybatis.schema" />
-        <property name="orql.dialect" value="mysql" />
-        <property name="orql.mappers" value="com.github.orql.mybatis.mapper" />
-    </properties>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -17,7 +12,7 @@
             </dataSource>
         </environment>
     </environments>
-<!--    <mappers>-->
-<!--        <mapper resource="org/mybatis/example/BlogMapper.xml"/>-->
-<!--    </mappers>-->
+    <mappers>
+        <mapper resource="mapper/UserMapper.xml"/>
+    </mappers>
 </configuration>
